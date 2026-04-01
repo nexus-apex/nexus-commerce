@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Shopproducts | NexusCommerce{% endblock %}
+{% block page_title %}Shopproducts{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+  <form class="search-bar" method="get" style="flex:1;margin-bottom:0">
+    <input type="text" name="search" value="{{ search }}" placeholder="Search shopproducts...">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All Status</option>
+      <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+      <option value="draft" {% if status_filter == 'draft' %}selected{% endif %}>Draft</option>
+      <option value="out_of_stock" {% if status_filter == 'out_of_stock' %}selected{% endif %}>Out of Stock</option>
+      <option value="discontinued" {% if status_filter == 'discontinued' %}selected{% endif %}>Discontinued</option>
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  </form>
+  <a href="/shopproducts/create/" class="btn btn-primary">+ New ShopProduct</a>
+</div>
+
+<div class="card">
+  {% if records %}
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Sku</th><th>Category</th><th>Price</th><th>Compare Price</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td><a href="/shopproducts/{{ r.pk }}/edit/"><strong>{{ r.name }}</strong></a></td>
+        <td>{{ r.sku|default:"-" }}</td>
+        <td>{{ r.category|default:"-" }}</td>
+        <td>{{ r.price|floatformat:2 }}</td>
+        <td>{{ r.compare_price|floatformat:2 }}</td>
+        <td class="actions">
+          <a href="/shopproducts/{{ r.pk }}/edit/" class="btn btn-primary btn-sm">Edit</a>
+          <form method="post" action="/shopproducts/{{ r.pk }}/delete/" style="display:inline" onsubmit="return confirm('Delete?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Del</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">
+    <p>No shopproducts found.</p>
+    <a href="/shopproducts/create/" class="btn btn-primary" style="margin-top:1rem">Create ShopProduct</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
